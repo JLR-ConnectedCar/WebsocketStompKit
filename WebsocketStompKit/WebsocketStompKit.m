@@ -8,7 +8,7 @@
 //
 
 #import "WebsocketStompKit.h"
-#import <JFRWebSocket.h>
+#import "JFRWebSocket.h"
 
 #define kDefaultTimeout 5
 #define kVersion1_2 @"1.2"
@@ -122,6 +122,12 @@
 + (STOMPFrame *) STOMPFrameFromData:(NSData *)data {
     NSData *strData = [data subdataWithRange:NSMakeRange(0, [data length])];
     NSString *msg = [[NSString alloc] initWithData:strData encoding:NSUTF8StringEncoding];
+    
+    if ([msg isEqualToString:@"\n"]) {
+        LogDebug(@"<<< PONG");
+        return nil;
+    }
+    
     LogDebug(@"<<< %@", msg);
     NSMutableArray *contents = (NSMutableArray *)[[msg componentsSeparatedByString:kLineFeed] mutableCopy];
     while ([contents count] > 0 && [contents[0] isEqual:@""]) {
@@ -324,7 +330,7 @@ CFAbsoluteTime serverActivity;
                 [self.socket addHeader:[headers objectForKey:key] forKey:key];
             }
         }
-        self.socket.delegate = self;
+        self.socket.delegate = (id)self;
         
         self.heartbeat = heart;
         
@@ -333,7 +339,7 @@ CFAbsoluteTime serverActivity;
         idGenerator = 0;
         self.connected = NO;
         self.subscriptions = [[NSMutableDictionary alloc] init];
-        self.clientHeartBeat = @"5000,10000";
+        self.clientHeartBeat = @"5000,0";
     }
     return self;
 }
@@ -505,6 +511,10 @@ CFAbsoluteTime serverActivity;
 }
 
 - (void)receivedFrame:(STOMPFrame *)frame {
+    if (!frame) {
+        return;
+    }
+
     // CONNECTED
     if([kCommandConnected isEqual:frame.command]) {
         self.connected = YES;
