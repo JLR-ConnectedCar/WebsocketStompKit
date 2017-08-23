@@ -97,6 +97,16 @@ typedef void (^STOMPMessageHandler)(STOMPMessage *message);
 @property (nonatomic, readonly) BOOL heartbeatActivated;
 @property (nonatomic, weak) id<STOMPClientDelegate> delegate;
 
+/**
+ Array of SecCertificateRef
+ */
+@property (nonatomic, strong) NSArray *pinnedCertificates;
+
+/**
+ Use `pinnedCertificates` for the connection
+ */
+@property (nonatomic, assign) BOOL usePinnedCertificates;
+
 - (id)initWithURL:(NSURL *)theUrl webSocketHeaders:(NSDictionary *)headers useHeartbeat:(BOOL)heartbeat;
 
 - (void)connectWithLogin:(NSString *)login

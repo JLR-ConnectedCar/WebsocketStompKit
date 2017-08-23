@@ -344,6 +344,25 @@ CFAbsoluteTime serverActivity;
     return self;
 }
 
+- (void)setUsePinnedCertificates:(BOOL)usePinnedCertificates {
+    if (usePinnedCertificates) {
+        NSMutableArray<JFRSSLCert *> *certs = [NSMutableArray array];
+        for (id certificate in _pinnedCertificates) {
+            NSData *certificateData = CFBridgingRelease(SecCertificateCopyData((SecCertificateRef)certificate));
+            if (certificateData) {
+                JFRSSLCert *cert = [[JFRSSLCert alloc] initWithData:certificateData];
+                if (cert) {
+                    [certs addObject:cert];
+                }
+            }
+        }
+        socket.security = [[JFRSecurity alloc] initWithCerts:certs publicKeys:false];
+    } else {
+        socket.security = nil;
+    }
+    _usePinnedCertificates = usePinnedCertificates;
+}
+
 - (BOOL) heartbeatActivated {
     return heartbeat;
 }
