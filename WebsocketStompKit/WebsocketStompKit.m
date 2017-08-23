@@ -344,10 +344,10 @@ CFAbsoluteTime serverActivity;
     return self;
 }
 
-- (void)setUsePinnedCertificates:(BOOL)usePinnedCertificates {
-    if (usePinnedCertificates) {
+- (void)setPinnedCertificates:(NSArray *)pinnedCertificates {
+    if (pinnedCertificates.count > 0) {
         NSMutableArray<JFRSSLCert *> *certs = [NSMutableArray array];
-        for (id certificate in _pinnedCertificates) {
+        for (id certificate in pinnedCertificates) {
             NSData *certificateData = CFBridgingRelease(SecCertificateCopyData((SecCertificateRef)certificate));
             if (certificateData) {
                 JFRSSLCert *cert = [[JFRSSLCert alloc] initWithData:certificateData];
@@ -360,7 +360,7 @@ CFAbsoluteTime serverActivity;
     } else {
         socket.security = nil;
     }
-    _usePinnedCertificates = usePinnedCertificates;
+    _pinnedCertificates = [pinnedCertificates copy];
 }
 
 - (BOOL) heartbeatActivated {

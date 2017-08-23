@@ -100,12 +100,7 @@ typedef void (^STOMPMessageHandler)(STOMPMessage *message);
 /**
  Array of SecCertificateRef
  */
-@property (nonatomic, strong) NSArray *pinnedCertificates;
-
-/**
- Use `pinnedCertificates` for the connection
- */
-@property (nonatomic, assign) BOOL usePinnedCertificates;
+@property (nonatomic, copy) NSArray *pinnedCertificates;
 
 - (id)initWithURL:(NSURL *)theUrl webSocketHeaders:(NSDictionary *)headers useHeartbeat:(BOOL)heartbeat;
 
